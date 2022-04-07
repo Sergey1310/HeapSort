@@ -3,4 +3,4 @@ project(HipSort)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(HipSort main.cpp)
+add_executable(HipSort main.cpp test.h)
