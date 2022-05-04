@@ -1,8 +1,14 @@
 #include <iostream>
 #include <vector>
+#include <ctime>
+
+enum {
+    POSITIVE,
+    NEGATIVE,
+    MIX
+};
 
 template <class T>
-        // Своя реализация  функции swap.
 void Swap(T& first, T& second){
     T* temp = new T;
     *temp = first;
@@ -11,10 +17,54 @@ void Swap(T& first, T& second){
     delete temp;
 };
 
-// Функция восстановления свойств кучи, ставит корневой элемент на соответствующее место в куче.
 template <class T>
-//Принимае шаблонный массив, его размер и индекс текущего элемента.
+void ShowArray(T array[], int size){
+    for (int i = 0; i < size; ++i) {
+        std::cout << array[i] << " ";
+    }
+    std::cout << std::endl;
+}
+
+template <class T>
+void FillArray(T array[], int size, int type = 0){
+    if (size < 0){
+        std::cout << "Error negative size!" << std::endl;
+        return;
+    }
+    if (type == POSITIVE){
+        for (int i = 0; i < size; ++i) {
+            array[i] = rand()%100;
+        }
+    }
+    if (type == NEGATIVE){
+        for (int i = 0; i < size; ++i) {
+            array[i] = (rand()%100)*(-1);
+        }
+    }
+    if (type == MIX){
+        for (int i = 0; i < size; ++i) {
+            array[i] = (rand() * ((-1)^i)%100);
+        }
+    }
+}
+
+template <class T>
+void ClearArray (T array[], int size){
+    if (size < 0){
+        std::cout << "Error negative size!" << std::endl;
+        return;
+    }
+    for (int i = 0; i < size; ++i) {
+        array[i] = 0;
+    }
+}
+
+template <class T>
 void Heapify(T array[], int size, int current = 0){
+    if (size < 0){
+        std::cout << "Error negative size!" << std::endl;
+        return;
+    }
     int largest = current; // Объявляем переменную для индекса наибольшего элемента, по умолчанию это корневой элемент.
     int left = 2*current +1; // Объявляем левого и правого потомков
     int right = 2*current +2;
@@ -39,17 +89,24 @@ void Heapify(T array[], int size, int current = 0){
 };
 
 template <class T>
-// Функция превращающая массив в убывающую кучу.
 void MakeHeap(T array[], int size){
+    if (size < 0){
+        std::cout << "Error negative size!" << std::endl;
+        return;
+    }
     // Для создании кучи, нужно применить функцию восстановления свойств кучи для каждого элемента кучи, имеющего потомков.
     // Так как куча двоичная, то потомко будут иметь только элементы начиная с её середины, а поскольку массив начинается с нуля, то необходимо также уменьшить размер на 1.
     for (int i = (size/2) -1; i >= 0; --i) {
         Heapify(array,size,i);
     }
 };
+
 template <class T>
-// Функция сортировки кучи принимающая массив с построенной кучей и его размер.
 void SortHeap(T array[], int size){
+    if (size < 0){
+        std::cout << "Error negative size!" << std::endl;
+        return;
+    }
     // Принцип сортировки - Так как убывающей куче корневой элемент является наибольшим то можно провести сортировку поменяв его местами
     // с последним элементом массива, а затем вызвав функцию восстановления свойств кучи, с размером массива на единицу меньше.
     // Таким образом необходимо пройти по всему массиву, в процессе сортировки, левая часть массива будет представлять из себя кучу, а правая отсортированный по возрастанию массив.
@@ -60,35 +117,68 @@ void SortHeap(T array[], int size){
     }
 };
 
-// Вспомогательные функции
 template <class T>
-void FillArray(T array[], int size){
-    for (int i = 0; i < size; ++i) {
-        array[i] = i;
+void Test (int size){
+    T *array = new T[size];
+    for (int i = 0; i < 3; ++i) {
+        std::cout << "Start test with :" << size;
+        if (i == POSITIVE){
+            std::cout << " POZITIVE elements" << std::endl;
+        }
+        if (i == NEGATIVE){
+            std::cout << " NEGATIVE elements" << std::endl;
+        }
+        if (i == MIX){
+            std::cout << " MIX elements" << std::endl;
+        }
+
+        FillArray(array,size,i);
+        ShowArray(array, size);
+        std::cout << "Make a heap" << std::endl;
+        MakeHeap(array,size);
+        ShowArray(array,size);
+        std::cout << "Sort Heap: " << std::endl;
+        SortHeap(array,size);
+        ShowArray(array,size);
+        std::cout << "Finish Test: " << std::endl << std::endl;
+        ClearArray(array,size);
     }
-}
-template <class T>
-void ShowArray(T array[], int size){
-    for (int i = 0; i < size; ++i) {
-        std::cout << "Element № " << i << " = " << array[i] << std::endl;
-    }
+    delete[] array;
 }
 
+int main() {
+    srand(time(NULL));
+    int size;
+    //Test ZERO elements;
+    size = 0;
+    Test<int>(size);
 
+    //Test one element;
+    size = 1;
+    Test<int>(size);
 
-int main(){
-    int size = 15;
-    int* array = new int[size];
-    FillArray(array,size);
-    ShowArray(array,size);
-    std::cout << "--------Before--------" << std::endl;
-    MakeHeap(array,size);
-    std::cout << "--------After--------" << std::endl;
-    ShowArray(array,size);
+    //Test two elements;
+    size = 2;
+    Test<int>(size);
 
-    std::cout << "--------Before Sort--------" << std::endl;
-    ShowArray(array, size);
-    SortHeap(array,size);
-    std::cout << "--------After Sort--------" << std::endl;
-    ShowArray(array, size);
+    //Test three elements;
+    size = 3;
+    Test<int>(size);
+
+    //Test 5 elements;
+    size = 5;
+    Test<int>(size);
+
+    //Test 10 elements;
+    size = 10;
+    Test<int>(size);
+
+    //Test 50 elements;
+    size = 50;
+    Test<int>(size);
+
+    //Test 100 elements;
+    size = 100;
+    Test<int>(size);
+
 }
