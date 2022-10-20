@@ -43,7 +43,11 @@ void FillArray(T array[], int size, int type = 0){
     }
     if (type == MIX){
         for (int i = 0; i < size; ++i) {
-            array[i] = (rand() * ((-1)^i)%100);
+            if(i%2){
+                array[i] = rand()%100;
+            } else{
+                array[i] = (rand()%100)*(-1);
+            }
         }
     }
 }
